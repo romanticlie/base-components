@@ -7,9 +7,9 @@ Nginx,MySQL,Redis,Mongo,Apollo,RabbitMQ,Consul,Etcd,ElasticSearch,Kibana
 
 ## Copy Yml & Environments
 ```bash
-# copy docker-compose.yml.example file
-copy docker-compose.yml.example docker-compose.yml
-# copy .env.example file
+# copy docker-compose.yml file
+copy docker-compose.sample.yml docker-compose.yml
+# copy .env file
 copy .env.example .env
 ```
 
