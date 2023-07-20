@@ -1,7 +1,7 @@
 # Base Components Template
 
 <div align="center">
-    <img src="charlie.jpeg" height="100" width="100" >
+    <img src="https://github.com/romanticlie/base-components/raw/master/docs/images/base-components.jpeg?raw=true" height="100" width="100" >
  </div>
 
 ## Include Components
