@@ -179,6 +179,9 @@ services:
   #   ports:
   #     - "${RABBITMQ_HOST_CLIENT_PORT}:5672"
   #     - "${RABBITMQ_HOST_SERVER_PORT}:15672"
+  #   expose:
+  #     - "5672"
+  #     - "15672"
   #   environment:
   #     RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
   #     RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
@@ -193,6 +196,8 @@ services:
   #   container_name: base-components-consul
   #   ports:
   #     - "${CONSUL_PORT}:8500"
+  #   expose:
+  #     - "8500"
   #   environment:
   #     CONSUL_BIND_INTERFACE: eth0
   #     TZ: "${TZ}"
@@ -214,6 +219,9 @@ services:
   #   ports:
   #     - "${ETCD_CLIENT_PORT}:2379"
   #     - "${ETCD_SERVER_PORT}:2380"
+  #   expose:
+  #     - "2379"
+  #     - "2380"  
   #   environment:
   #     ALLOW_NONE_AUTHENTICATION: yes
   #     TZ: "${TZ}"
@@ -231,6 +239,9 @@ services:
   #   ports:
   #     - "${ELASTICSEARCH_INTERNAL_PORT}:9300"
   #     - "${ELASTICSEARCH_EXTERNAL_PORT}:9200"
+  #   expose:
+  #     - "9300"
+  #     - "9200"  
   #   volumes:
   #     - "${ELASTICSEARCH_DIR}/conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
   #     - "${ELASTICSEARCH_DIR}/data:/usr/share/elasticsearch/data"
@@ -255,6 +266,8 @@ services:
   #   container_name: base-components-kibana
   #   ports:
   #     - "${KIBANA_PORT}:5601"
+  #   expose:
+  #     - "5601"  
   #   environment:
   #     ELASTICSEARCH_URL: "http://base-components-elasticsearch:9200"
   #     TZ: "${TZ}"
