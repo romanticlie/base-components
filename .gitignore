@@ -1,6 +1,9 @@
 # Environments
 .env
 
+# Docker-compose
+docker-compose.yml
+
 # OS General
 Thumbs.db
 .DS_Store

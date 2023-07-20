@@ -1,0 +1,279 @@
+version: "3"
+
+services:
+  ### Nginx ###
+  # nginx:
+  #   image: nginx:1.24
+  #   container_name: base-components-nginx
+  #   ports:
+  #     - "${NGINX_HTTP_PORT}:80"
+  #     - "${NGINX_HTTPS_PORT}:443"
+  #   expose:
+  #     - "80"
+  #     - "443"
+  #   volumes:
+  #     - "${NGINX_DIR}/conf/nginx.conf:/etc/nginx/nginx.conf:rw"
+  #     - "${NGINX_DIR}/conf/conf.d:/etc/nginx/conf.d/:rw"
+  #     - "${NGINX_DIR}/logs:/var/log/nginx/:rw"
+  #     - "${NGINX_CODE_ROOT}:/opt/case:rw"
+  #   environment:
+  #     TZ: "${TZ}" 
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.2 
+  ### MySQL ###
+  mysql:
+    image: base-components-mysql:1.0
+    build:
+      context: "${MYSQL_DIR}/build"
+      dockerfile: Dockerfile
+    container_name: base-components-mysql
+    ports:
+      - "${MYSQL_PORT}:3306"
+    expose:
+      - "3306"
+    volumes:
+      - "${MYSQL_DIR}/conf/my.cnf:/etc/mysql/conf.d/mysql.cnf:rw"
+      - "${MYSQL_DIR}/data:/var/lib/mysql/:rw"
+      - "${MYSQL_DIR}/logs:/var/log/mysql/:rw"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      TZ: "${TZ}"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot","-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 8s
+    restart: always
+    networks:
+      default:
+        ipv4_address: 172.17.11.3
+  ### Redis ###
+  redis:
+    image: redis:7.0
+    container_name: base-components-redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    expose:
+      - "6379"
+    volumes:
+      - "${REDIS_DIR}/conf/redis.conf:/usr/local/etc/redis/redis.conf:rw"
+      - "${REDIS_DIR}/data:/data/:rw"
+    environment:
+      TZ: "${TZ}"
+    command:
+      - /usr/local/bin/redis-server
+      - /usr/local/etc/redis/redis.conf
+    restart: always
+    networks:
+      default:
+        ipv4_address: 172.17.11.4
+  ### Mongo ###
+  # mongo:
+  #   image: mongo:4.4
+  #   container_name: base-components-mongo
+  #   volumes:
+  #     - "${MONGO_DIR}/conf/mongod.conf:/etc/mongo/mongod.conf:rw"  
+  #     - "${MONGO_DIR}/data:/data/db:rw"
+  #     - "${MONGO_DIR}/logs:/var/log/mongodb:rw"
+  #   ports:
+  #     - "${MONGO_PORT}:27017"  
+  #   expose:
+  #     - "27017"
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: "${MONGO_INITDB_ROOT_USERNAME}"
+  #     MONGO_INITDB_ROOT_PASSWORD: "${MONGO_INITDB_ROOT_PASSWORD}"
+  #     TZ: "${TZ}"
+  #   command:
+  #     - mongod
+  #     - --config
+  #     - /etc/mongo/mongod.conf
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.5
+  ### Apollo ###
+  # apolloconfig:
+  #   image: apolloconfig/apollo-configservice:2.1.0
+  #   container_name: base-components-apolloconfig
+  #   ports:
+  #     - "${APOLLO_CONFIG_PORT}:8080"
+  #   expose:
+  #     - "8080"
+  #   environment:
+  #     SPRING_DATASOURCE_URL: "jdbc:mysql://base-components-mysql:3306/ApolloConfigDB?characterEncoding=utf8&serverTimezone=Asia/Shanghai"
+  #     SPRING_DATASOURCE_USERNAME: "root"
+  #     SPRING_DATASOURCE_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+  #     TZ: "${TZ}"
+  #   depends_on:
+  #     mysql:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test: ["CMD", "curl" ,"-f", "http://localhost:8080"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 10
+  #     start_period: 18s
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.6
+  # apolloadmin:
+  #   image: apolloconfig/apollo-adminservice:2.1.0
+  #   container_name: base-components-apolloadmin
+  #   ports:
+  #     - "${APOLLO_ADMIN_PORT}:8090"
+  #   expose:
+  #     - "8090"
+  #   environment:
+  #     SPRING_DATASOURCE_URL: "jdbc:mysql://base-components-mysql:3306/ApolloConfigDB?characterEncoding=utf8&serverTimezone=Asia/Shanghai"
+  #     SPRING_DATASOURCE_USERNAME: "root"
+  #     SPRING_DATASOURCE_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+  #     TZ: "${TZ}"
+  #   depends_on:
+  #     apolloconfig:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test: ["CMD", "curl" ,"-f", "http://localhost:8090"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 10
+  #     start_period: 12s
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.7
+  # apolloportal:
+  #   image: apolloconfig/apollo-portal:2.1.0
+  #   container_name: base-components-apolloportal
+  #   ports:
+  #     - "${APOLLO_PORTAL_PORT}:8070"
+  #   expose:
+  #     - "8070"
+  #   environment:
+  #     SPRING_DATASOURCE_URL: "jdbc:mysql://base-components-mysql:3306/ApolloPortalDB?characterEncoding=utf8&serverTimezone=Asia/Shanghai"
+  #     SPRING_DATASOURCE_USERNAME: "root"
+  #     SPRING_DATASOURCE_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+  #     APOLLO_PORTAL_ENVS: "DEV"
+  #     DEV_META: "http://base-components-apolloconfig:8080"
+  #     TZ: "${TZ}"
+  #   depends_on:
+  #     apolloadmin:
+  #       condition: service_healthy
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.8
+  ### RabbitMQ ###
+  # rabbitmq:
+  #   image: base-components-rabbitmq:1.0
+  #   build:
+  #     context: "${RABBITMQ_DIR}/build"
+  #     dockerfile: Dockerfile
+  #     args:
+  #       RABBITMQ_VERSION: ${RABBITMQ_VERSION}
+  #       RABBITMQ_PLUGINS: ${RABBITMQ_PLUGINS}
+  #   container_name: base-components-rabbitmq
+  #   ports:
+  #     - "${RABBITMQ_HOST_CLIENT_PORT}:5672"
+  #     - "${RABBITMQ_HOST_SERVER_PORT}:15672"
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
+  #     RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
+  #     TZ: "${TZ}"
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.9
+  ### Consul ###
+  # consul:
+  #   image: consul:1.15
+  #   container_name: base-components-consul
+  #   ports:
+  #     - "${CONSUL_PORT}:8500"
+  #   environment:
+  #     CONSUL_BIND_INTERFACE: eth0
+  #     TZ: "${TZ}"
+  #   command: agent -server -bootstrap -ui -node=node1 -bind=0.0.0.0 -client=0.0.0.0
+  #   healthcheck:
+  #     test: ["CMD", "curl" ,"-f", "http://localhost:8500/v1/health/service/consul"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 10
+  #     start_period: 3s
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.10
+  ### Etcd ###
+  # etcd:
+  #   image: bitnami/etcd:3.5
+  #   container_name: base-components-etcd
+  #   ports:
+  #     - "${ETCD_CLIENT_PORT}:2379"
+  #     - "${ETCD_SERVER_PORT}:2380"
+  #   environment:
+  #     ALLOW_NONE_AUTHENTICATION: yes
+  #     TZ: "${TZ}"
+  #   volumes:
+  #     - "${ETCD_DIR}/data:/bitnami/etcd/data"
+  #     - "${ETCD_DIR}/conf/etcd.conf.yml:/opt/bitnami/etcd/conf/etcd.conf.yml"
+  #   restart: always 
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.11
+  ### ElasticSearch ###
+  # elasticsearch:
+  #   image: elasticsearch:7.3.0
+  #   container_name: base-components-elasticsearch
+  #   ports:
+  #     - "${ELASTICSEARCH_INTERNAL_PORT}:9300"
+  #     - "${ELASTICSEARCH_EXTERNAL_PORT}:9200"
+  #   volumes:
+  #     - "${ELASTICSEARCH_DIR}/conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+  #     - "${ELASTICSEARCH_DIR}/data:/usr/share/elasticsearch/data"
+  #     - "${ELASTICSEARCH_DIR}/plugins:/usr/share/elasticsearch/plugins"
+  #   environment:
+  #     discovery.type: single-node
+  #     TZ: "${TZ}"
+  #   privileged: true
+  #   healthcheck:
+  #     test: ["CMD", "curl" ,"-f", "http://localhost:9200/_cat/health"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 10
+  #     start_period: 5s
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.12
+  ### Kibana ###
+  # kibana:
+  #   image: kibana:7.3.0
+  #   container_name: base-components-kibana
+  #   ports:
+  #     - "${KIBANA_PORT}:5601"
+  #   environment:
+  #     ELASTICSEARCH_URL: "http://base-components-elasticsearch:9200"
+  #     TZ: "${TZ}"
+  #   privileged: true
+  #   restart: always
+  #   depends_on:
+  #     elasticsearch:
+  #       condition: service_healthy
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.13
+### Networks Create ###
+### docker network create --subnet=172.17.11.0/24 --gateway=172.17.11.1 --opt "com.docker.network.bridge.name"="back" back ###
+networks:
+  default:
+    name: back
+    external: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.17.11.0/24
+          gateway: 172.17.11.1 

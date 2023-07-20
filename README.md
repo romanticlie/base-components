@@ -1,18 +1,25 @@
 # Base Components Template
 
-## Copy Environments
+## Include Components
 ```bash
-# copy .env.example files
+Nginx,MySQL,Redis,Mongo,Apollo,RabbitMQ,Consul,Etcd,ElasticSearch,Kibana
+```
+
+## Copy Yml & Environments
+```bash
+# copy docker-compose.yml.example file
+copy docker-compose.yml.example docker-compose.yml
+# copy .env.example file
 copy .env.example .env
 ```
 
 ## Docker-compose
 ```bash
+# create networks 
+docker network create --subnet=172.17.11.0/24 --gateway=172.17.11.1 --opt "com.docker.network.bridge.name"="back" back
+
 # build
 docker-compose build
-
-# networks
-docker network create --subnet=172.17.11.0/24 --gateway=172.17.11.1 --opt "com.docker.network.bridge.name"="back" back
 
 # run
 docker-compose up -d
