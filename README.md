@@ -1,5 +1,9 @@
 # Base Components Template
 
+<div align="center">
+    <img src="charlie.jpeg" height="100" width="100" >
+ </div>
+
 ## Include Components
 ```bash
 Nginx,MySQL,Redis,Mongo,Apollo,RabbitMQ,Consul,Etcd,ElasticSearch,Kibana
