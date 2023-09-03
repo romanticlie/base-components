@@ -6,7 +6,7 @@
 
 ## Include Components
 ```bash
-Nginx,MySQL,Redis,Mongo,Apollo,RabbitMQ,Consul,Etcd,ElasticSearch,Kibana
+Nginx,MySQL,Redis,Mongo,Apollo,RabbitMQ,Consul,Etcd,ElasticSearch,Kibana,Grafana,Jaeger,Minio
 ```
 
 ## Copy Yml & Environments
@@ -15,6 +15,18 @@ Nginx,MySQL,Redis,Mongo,Apollo,RabbitMQ,Consul,Etcd,ElasticSearch,Kibana
 copy docker-compose.sample.yml docker-compose.yml
 # copy .env file
 copy .env.example .env
+```
+
+## Update Docker Settings 
+`vim /etc/docker/daemon.json`
+```json
+{
+    "bip": "172.17.10.1/24",
+    "experimental": true,
+    "features": {
+        "buildkit": true
+    }
+}
 ```
 
 ## Docker-compose

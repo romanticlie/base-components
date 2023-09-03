@@ -249,7 +249,6 @@ services:
   #   environment:
   #     discovery.type: single-node
   #     TZ: "${TZ}"
-  #   privileged: true
   #   healthcheck:
   #     test: ["CMD", "curl" ,"-f", "http://localhost:9200/_cat/health"]
   #     interval: 5s
@@ -271,7 +270,6 @@ services:
   #   environment:
   #     ELASTICSEARCH_URL: "http://base-components-elasticsearch:9200"
   #     TZ: "${TZ}"
-  #   privileged: true
   #   restart: always
   #   depends_on:
   #     elasticsearch:
@@ -279,6 +277,65 @@ services:
   #   networks:
   #     default:
   #       ipv4_address: 172.17.11.13
+  ### Grafana ###
+  # grafana:
+  #   image: grafana/grafana:10.1.0
+  #   container_name: base-components-grafana
+  #   ports:
+  #     - "${GRAFANA_PORT}:3000"
+  #   expose:
+  #     - "3000"  
+  #   environment:
+  #     TZ: "${TZ}"
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.14
+  ### Jaeger ###
+  # jaeger:
+  #   image: jaegertracing/all-in-one:1.48
+  #   container_name: base-components-jaeger
+  #   ports:
+  #     - "${JAEGER_REPORT_PORT}:14268"
+  #     - "${JAEGER_ADMIN_PORT}:16686"
+  #   expose:
+  #     - "14268" 
+  #     - "16686"
+  #   environment:
+  #     TZ: "${TZ}"
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.15
+  ### Minio ###
+  # minio:
+  #   image: minio/minio
+  #   container_name: base-components-minio
+  #   ports:
+  #     - "${MINIO_API_PORT}:9000"
+  #     - "${MINIO_ADMIN_PORT}:9001"
+  #   expose:
+  #     - "9000" 
+  #     - "9001"
+  #   environment:
+  #     MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
+  #     MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+  #     TZ: "${TZ}"
+  #   volumes:
+  #     - "${MINIO_DIR}/data:/data"
+  #   command: server /data --console-address ":9001"
+  #   ### 支持四种健康检查类型 CMD,CMD-SHELL,HTTP,TCP,NONE ###
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "netstat -tnlp|grep :9000 || exit 1"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 10
+  #     start_period: 5s
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.16  
+
 ### Networks Create ###
 ### docker network create --subnet=172.17.11.0/24 --gateway=172.17.11.1 --opt "com.docker.network.bridge.name"="back" back ###
 networks:
