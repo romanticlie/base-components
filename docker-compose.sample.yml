@@ -360,6 +360,22 @@ services:
   #   networks:
   #     default:
   #       ipv4_address: 172.17.11.17
+  ### Prometheus ###
+  # prometheus:
+  #   image: prom/prometheus:v2.47.0
+  #   container_name: base-components-prometheus
+  #   ports:
+  #     - "${PROMETHEUS_PORT}:9090"
+  #   expose:
+  #     - "9090"
+  #   environment:
+  #     TZ: "${TZ}"
+  #   volumes:
+  #     - "${PROMETHEUS_DIR}/conf/prometheus.yml:/etc/prometheus/prometheus.yml:rw"
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.18
 
 ### Networks Create ###
 ### docker network create --subnet=172.17.11.0/24 --gateway=172.17.11.1 --opt "com.docker.network.bridge.name"="back" back ###
