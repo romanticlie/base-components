@@ -376,6 +376,139 @@ services:
   #   networks:
   #     default:
   #       ipv4_address: 172.17.11.18
+  ### Pyroscope ###
+  # pyroscope:
+  #   image: grafana/pyroscope:1.2.1
+  #   container_name: base-components-pyroscope
+  #   ports:
+  #     - "${PYROSCOPE_PORT}:4040"
+  #   expose:
+  #     - "4040"  
+  #   environment:
+  #     TZ: "${TZ}"
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.19
+  ### POSTGRES ###
+  # postgres:
+  #   image: postgres:15.5
+  #   container_name: base-components-postgres
+  #   ports:
+  #     - "${POSTGRES_PORT}:5432"
+  #   expose:
+  #     - "5432"
+  #   volumes:
+  #     - "${POSTGRES_DIR}/data:/var/lib/postgresql/data:rw"
+  #   environment:
+  #     POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+  #     POSTGRES_USER: "${POSTGRES_USER}"
+  #     PGDATA: "/var/lib/postgresql/data/pgdata"
+  #     TZ: "${TZ}"
+  #   healthcheck:
+  #     test: ["CMD", "pg_isready" ,"-U", "${POSTGRES_USER}"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 10
+  #     start_period: 3s 
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.20
+  ### SentryWeb ###
+  # sentryweb:
+  #   image: sentry:9.1.2
+  #   container_name: base-components-sentryweb
+  #   ports:
+  #     - "${SENTRY_PORT}:9000"
+  #   expose:
+  #     - "9000"
+  #   environment:
+  #     SENTRY_SECRET_KEY: "${SENTRY_SECRET_KEY}"
+  #     SENTRY_POSTGRES_HOST: "${SENTRY_POSTGRES_HOST}"
+  #     SENTRY_POSTGRES_PORT: "${SENTRY_POSTGRES_PORT}"
+  #     SENTRY_DB_NAME: "${SENTRY_DB_NAME}"
+  #     SENTRY_DB_USER: "${SENTRY_DB_USER}"
+  #     SENTRY_DB_PASSWORD: "${SENTRY_DB_PASSWORD}"
+  #     SENTRY_REDIS_HOST: "${SENTRY_REDIS_HOST}"
+  #     SENTRY_REDIS_PORT: "${SENTRY_REDIS_PORT}"
+  #     SENTRY_REDIS_DB: "${SENTRY_REDIS_DB}"
+  #     SENTRY_SERVER_EMAIL: "${SENTRY_SERVER_EMAIL}"
+  #     SENTRY_EMAIL_HOST: "${SENTRY_EMAIL_HOST}"
+  #     SENTRY_EMAIL_PORT: "${SENTRY_EMAIL_PORT}"
+  #     SENTRY_EMAIL_USER: "${SENTRY_EMAIL_USER}"
+  #     SENTRY_EMAIL_PASSWORD: "${SENTRY_EMAIL_PASSWORD}"
+  #     SENTRY_EMAIL_USE_TLS: "${SENTRY_EMAIL_USE_TLS}"
+  #     TZ: "${TZ}"
+  #   volumes:
+  #     - "${SENTRY_DIR}/data:/var/lib/sentry/files:rw"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_started
+  #   command: ["run","web"]    
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.21
+  ### SentryCron ###      
+  # sentrycron:
+  #   image: sentry:9.1.2
+  #   container_name: base-components-sentrycron
+  #   environment:
+  #     SENTRY_SECRET_KEY: "${SENTRY_SECRET_KEY}"
+  #     SENTRY_POSTGRES_HOST: "${SENTRY_POSTGRES_HOST}"
+  #     SENTRY_POSTGRES_PORT: "${SENTRY_POSTGRES_PORT}"
+  #     SENTRY_DB_NAME: "${SENTRY_DB_NAME}"
+  #     SENTRY_DB_USER: "${SENTRY_DB_USER}"
+  #     SENTRY_DB_PASSWORD: "${SENTRY_DB_PASSWORD}"
+  #     SENTRY_REDIS_HOST: "${SENTRY_REDIS_HOST}"
+  #     SENTRY_REDIS_PORT: "${SENTRY_REDIS_PORT}"
+  #     SENTRY_REDIS_DB: "${SENTRY_REDIS_DB}"
+  #     SENTRY_SERVER_EMAIL: "${SENTRY_SERVER_EMAIL}"
+  #     SENTRY_EMAIL_HOST: "${SENTRY_EMAIL_HOST}"
+  #     SENTRY_EMAIL_PORT: "${SENTRY_EMAIL_PORT}"
+  #     SENTRY_EMAIL_USER: "${SENTRY_EMAIL_USER}"
+  #     SENTRY_EMAIL_PASSWORD: "${SENTRY_EMAIL_PASSWORD}"
+  #     SENTRY_EMAIL_USE_TLS: "${SENTRY_EMAIL_USE_TLS}"
+  #     TZ: "${TZ}"
+  #   depends_on:
+  #     - sentryweb
+  #   command: ["run","cron"]
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.22
+  ### SentryWorker ###      
+  # sentryworker:
+  #   image: sentry:9.1.2
+  #   container_name: base-components-sentryworker
+  #   environment:
+  #     SENTRY_SECRET_KEY: "${SENTRY_SECRET_KEY}"
+  #     SENTRY_POSTGRES_HOST: "${SENTRY_POSTGRES_HOST}"
+  #     SENTRY_POSTGRES_PORT: "${SENTRY_POSTGRES_PORT}"
+  #     SENTRY_DB_NAME: "${SENTRY_DB_NAME}"
+  #     SENTRY_DB_USER: "${SENTRY_DB_USER}"
+  #     SENTRY_DB_PASSWORD: "${SENTRY_DB_PASSWORD}"
+  #     SENTRY_REDIS_HOST: "${SENTRY_REDIS_HOST}"
+  #     SENTRY_REDIS_PORT: "${SENTRY_REDIS_PORT}"
+  #     SENTRY_REDIS_DB: "${SENTRY_REDIS_DB}"
+  #     SENTRY_SERVER_EMAIL: "${SENTRY_SERVER_EMAIL}"
+  #     SENTRY_EMAIL_HOST: "${SENTRY_EMAIL_HOST}"
+  #     SENTRY_EMAIL_PORT: "${SENTRY_EMAIL_PORT}"
+  #     SENTRY_EMAIL_USER: "${SENTRY_EMAIL_USER}"
+  #     SENTRY_EMAIL_PASSWORD: "${SENTRY_EMAIL_PASSWORD}"
+  #     SENTRY_EMAIL_USE_TLS: "${SENTRY_EMAIL_USE_TLS}"      
+  #     TZ: "${TZ}"
+  #   depends_on:
+  #     - sentryweb
+  #   command: ["run","worker"]
+  #   restart: always
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.17.11.23       
+
 
 ### Networks Create ###
 ### docker network create --subnet=172.17.11.0/24 --gateway=172.17.11.1 --opt "com.docker.network.bridge.name"="back" back ###

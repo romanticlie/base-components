@@ -6,7 +6,7 @@
 
 ## Include Components
 ```bash
-Nginx,MySQL,Redis,Mongo,Apollo,RabbitMQ,Consul,Etcd,ElasticSearch,Kibana,Grafana,Jaeger,Minio,Kafka,Prometheus
+Nginx,MySQL,Redis,Mongo,Apollo,RabbitMQ,Consul,Etcd,ElasticSearch,Kibana,Grafana,Jaeger,Minio,Kafka,Prometheus,Pyroscope,Postgres,Sentry
 ```
 
 ## Copy Yml & Environments
