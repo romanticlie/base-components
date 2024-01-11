@@ -66,6 +66,12 @@ services:
     command:
       - /usr/local/bin/redis-server
       - /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli" ,"ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 2s  
     restart: always
     networks:
       default:
@@ -446,8 +452,14 @@ services:
   #     postgres:
   #       condition: service_healthy
   #     redis:
-  #       condition: service_started
+  #       condition: service_healthy
   #   command: ["run","web"]    
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "python", "-c", "import httplib; conn = httplib.HTTPConnection('localhost', 9000); conn.request('GET', '/'); response = conn.getresponse(); exit(0) if response.status == 200 else exit(1)"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 10
+  #     start_period: 3s 
   #   restart: always
   #   networks:
   #     default:
@@ -474,7 +486,8 @@ services:
   #     SENTRY_EMAIL_USE_TLS: "${SENTRY_EMAIL_USE_TLS}"
   #     TZ: "${TZ}"
   #   depends_on:
-  #     - sentryweb
+  #     sentryweb:
+  #       condition: service_healthy
   #   command: ["run","cron"]
   #   restart: always
   #   networks:
@@ -502,7 +515,8 @@ services:
   #     SENTRY_EMAIL_USE_TLS: "${SENTRY_EMAIL_USE_TLS}"      
   #     TZ: "${TZ}"
   #   depends_on:
-  #     - sentryweb
+  #     sentryweb:
+  #       condition: service_healthy
   #   command: ["run","worker"]
   #   restart: always
   #   networks:
