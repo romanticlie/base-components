@@ -297,18 +297,33 @@ services:
   #   networks:
   #     default:
   #       ipv4_address: 172.17.11.14
-  ### Jaeger ###
-  # jaeger:
-  #   image: jaegertracing/all-in-one:1.48
-  #   container_name: base-components-jaeger
+  ### Tempo ###        
+  # tempo:
+  #   image: grafana/tempo:main-cc08db3
+  #   container_name: base-components-tempo
   #   ports:
-  #     - "${JAEGER_REPORT_PORT}:14268"
-  #     - "${JAEGER_ADMIN_PORT}:16686"
+  #     - "${TEMPO_HTTP_PORT}:3200"
+  #     - "${TEMPO_GRPC_PORT}:9095"
+  #     - "${TEMPO_JAEGER_HTTP_PORT}:14268"
+  #     - "${TEMPO_OTLP_GRPC_PORT}:4317"
+  #     - "${TEMPO_OTLP_HTTP_PORT}:4318"
+  #     - "${TEMPO_ZIPKIN_HTTP_PORT}:9411"
   #   expose:
-  #     - "14268" 
-  #     - "16686"
+  #     - "3200" 
+  #     - "9095" 
+  #     - "14268"
+  #     - "4317"
+  #     - "4318"
+  #     - "9411"
   #   environment:
   #     TZ: "${TZ}"
+  #   volumes:
+  #     - "${TEMPO_DIR}/conf/tempo.yaml:/etc/tempo.yaml"
+  #     - "${TEMPO_DIR}/data:/tmp/tempo"
+  #   depends_on:
+  #     minio:
+  #       condition: service_healthy      
+  #   command: [ "-config.file=/etc/tempo.yaml" ]
   #   restart: always
   #   networks:
   #     default:
@@ -332,7 +347,7 @@ services:
   #   command: server /data --console-address ":9001"
   #   ### 支持四种健康检查类型 CMD,CMD-SHELL,HTTP,TCP,NONE ###
   #   healthcheck:
-  #     test: ["CMD-SHELL", "netstat -tnlp|grep :9000 || exit 1"]
+  #     test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
   #     interval: 5s
   #     timeout: 3s
   #     retries: 10
